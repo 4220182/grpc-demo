@@ -1,0 +1,4 @@
+grpcio-tools ~= 1.40
+Jinja2 ~= 3.0
+Flask ~= 2.0
+pytest ~= 6.2

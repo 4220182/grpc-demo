@@ -1,0 +1,60 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: marketplace
+spec:
+  hosts:
+    - "marketplace"
+    - "m.tmp.com"
+  gateways:
+    - httpbin-gateway
+    - httpbin-gateway-https
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 8080
+        host: marketplace
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: recommendations
+spec:
+  hosts:
+    - "recommendations"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 50051
+        subset: v1
+        host: recommendations
+      weight: 50
+    - destination:
+        port:
+          number: 50051
+        subset: v2
+        host: recommendations
+      weight: 50
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: recommendations
+spec:
+  host: recommendations
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
