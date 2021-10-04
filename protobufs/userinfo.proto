@@ -1,0 +1,31 @@
+//定义gRPC服务以及方法请求和响应类型
+//使用以下命令生成 Python 代码给客户端和服务端通讯使用：
+//$ python -m grpc_tools.protoc -I../protobufs --python_out=. --grpc_python_out=. ../protobufs/userinfo.proto
+//    生成的代码文件被称为 userinfo_pb2.py与userinfo_pb2_grpc.py和包含以下内容：
+//    1. userinfo.proto 中定义的消息类
+//    2. userinfo.proto 中定义的服务类
+//       2.1 UserInfoStub, 客户端可以使用它来调用 UserInfo RPC
+//       2.2 UserInfoServicer，它定义了 UserInfo 服务的实现接口
+//    3. userinfo.proto 中定义的服务函数
+//       3.1 add_UserInfoServicer_to_server, 它将一个 UserInfoServicer 添加到 grpc.Server
+
+//协议版本
+syntax = "proto3";
+
+//定义请求消息体
+message UserRequest {
+  string username = 1;
+}
+
+//定义响应消息体
+message UserReply{
+  int32 userId = 1 ;
+  string desc = 2 ;
+}
+
+//定义gRPC服务，指定请求和响应类型
+//这里是一个简单的 RPC，客户端使用stub向服务器发送请求并等待响应返回，就像普通的函数调用一样。
+service UserInfo {
+  rpc GetUserInfo (UserRequest) returns (UserReply) {}
+}
+

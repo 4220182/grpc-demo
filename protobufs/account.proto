@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message AccountRequest {
+  string username = 1;
+}
+
+message AccountReply{
+  int32 userId = 1;
+  string username = 2;
+  string info = 3;
+}
+
+service AccountInfo {
+  rpc GetAccountInfo (AccountRequest) returns (AccountReply) {}
+}
+

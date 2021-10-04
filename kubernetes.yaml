@@ -19,11 +19,13 @@ spec:
     spec:
       containers:
         - name: marketplace
-          image: koza/marketplace:0.0.1
+          image: koza/marketplace:0.0.2
           imagePullPolicy: IfNotPresent
           env:
             - name: RECOMMENDATIONS_HOST
               value: recommendations
+            - name: ACCOUNT_HOST
+              value: account               
           ports:
           - containerPort: 8080
 ---
@@ -76,6 +78,50 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 50051
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account
+  labels:
+    app: account
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+        version: v1
+        istio.io/rev: v1-11-3
+    spec:
+      containers:
+        - name: account
+          image: koza/account:0.0.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRESQL_HOST
+              value: 192.168.5.4
+          ports:
+            - containerPort: 50050
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: account
+spec:
+  type: ClusterIP
+  selector:
+    app: account
+  ports:
+    - name: grpc-account
+      protocol: TCP
+      port: 50050
+      targetPort: 50050
+
 ---
 apiVersion: v1
 kind: Service

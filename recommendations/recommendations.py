@@ -56,6 +56,7 @@ def serve():
         RecommendationService(), server
     )
     server.add_insecure_port("[::]:50051")
+    print("listen: 0.0.0.0:50051")
     server.start()
     server.wait_for_termination()
 

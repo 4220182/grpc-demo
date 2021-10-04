@@ -58,3 +58,20 @@ spec:
   - name: v2
     labels:
       version: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: account
+spec:
+  hosts:
+    - "account"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 50050
+        host: account
