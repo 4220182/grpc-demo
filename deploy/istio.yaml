@@ -1,5 +1,39 @@
 ---
 apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: grpc-gateway
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*.tmp.com"
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: grpc-gateway-https
+spec:
+  selector:
+    istio: ingressgateway # use istio default ingress gateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: tls-cert # must be the same as secret
+    hosts:
+    - "*.tmp.com"
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: marketplace
@@ -8,8 +42,8 @@ spec:
     - "marketplace"
     - "m.tmp.com"
   gateways:
-    - httpbin-gateway
-    - httpbin-gateway-https
+    - grpc-gateway
+    - grpc-gateway-https
   http:
   - match:
     - uri:
@@ -75,3 +109,22 @@ spec:
         port:
           number: 50050
         host: account
+        subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: account
+spec:
+  host: account
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 1
+      http:
+        http1MaxPendingRequests: 1
+        maxRequestsPerConnection: 1
+  subsets:
+  - name: v1
+    labels:
+      version: v1

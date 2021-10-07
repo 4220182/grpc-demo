@@ -11,11 +11,15 @@ conn = psycopg2.connect(dbname="demo", user="postgres",
                         password="123456", host=f"{psql_host}", port="5432")
 
 def getAccountFromDb() :
-    # 创建cursor以访问数据库
-    cur = conn.cursor()
-    # 查询数据
-    cur.execute("SELECT * FROM accounts where username='test1'")
-    row = cur.fetchone()
+    try:
+        # 创建cursor以访问数据库
+        cur = conn.cursor()
+        # 查询数据
+        cur.execute("SELECT * FROM accounts where username='test1'")
+        row = cur.fetchone()
+    except Exception as inst:
+        print("postgres:", psql_host, inst)
+
     return AccountReply(userId=row[0], username=row[1], info=row[2])
 
 class AccountServicer (account_pb2_grpc.AccountInfoServicer):

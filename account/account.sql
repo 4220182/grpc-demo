@@ -8,3 +8,5 @@ CREATE TABLE accounts (
 	username VARCHAR ( 50 ) UNIQUE NOT NULL,
 	info VARCHAR ( 50 ) NOT NULL
 );
+
+INSERT INTO accounts (username, info) values ('test1', 'is test1');

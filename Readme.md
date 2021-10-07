@@ -41,3 +41,20 @@ docker run -d \
         postgres:latest
                 
 ```
+init postgres test data
+```
+kubectl port-forward svc/postgres 5432:5432
+createdb demo -U postgres -h localhost
+psql -h localhost -U postgres demo -f ./account/account.sql
+```
+
+init istio-gateway https cert
+```
+kubectl create secret tls tls-cert --cert=cert.pem --key=key.pem -n istio-system
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -subj '/CN=istio-gateway-tls-cert' -nodes 
+```
+
+```shell
+fortio load -c 2 -n 20 -loglevel Warning http://m.tmp.com/account
+wrk -c 10 -t 5 -d 1m http://m.tmp.com/account
+```
